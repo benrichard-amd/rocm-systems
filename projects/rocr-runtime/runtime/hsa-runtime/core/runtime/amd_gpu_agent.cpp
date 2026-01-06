@@ -2500,7 +2500,9 @@ void GpuAgent::InitAllocators() {
       const core::MemoryRegion* pool_ptr = pool.get();
       system_allocator_ = [pool_ptr](size_t size, size_t alignment,
                                  MemoryRegion::AllocateFlags alloc_flags) -> void* {
-        assert(alignment <= 4096);
+#if !defined(__powerpc__)
+     assert(alignment <= 4096);
+#endif
         void* ptr = nullptr;
         return (HSA_STATUS_SUCCESS ==
                 core::Runtime::runtime_singleton_->AllocateMemory(pool_ptr, size, alloc_flags, &ptr))
